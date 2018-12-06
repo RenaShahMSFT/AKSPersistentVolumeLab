@@ -33,7 +33,9 @@ default (default)   kubernetes.io/azure-disk   50m
 managed-premium     kubernetes.io/azure-disk   50m
 ```
 
-Let's add a new StorageClass for Azure Files:
+## Create a StorageClass for Azure Files:
+
+Container-based applications often need to access and persist data in an external data volume. If multiple pods need concurrent access to the same storage volume, you can use Azure Files to connect using the Server Message Block (SMB) protocol. AKS does not have a built in StorageClass for Azure files so we need to add it ourselves.
 
 First we need need to enable the correct role-based access control (RBAC) role access to create secrets. AKS clusters use Kubernetes RBAC to limit actions that can be performed. Roles define the permissions to grant, and bindings apply them to desired users. For more information, see [Using RBAC authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
 
