@@ -31,15 +31,15 @@ The following yaml example defines a persistent volume claim. The storage class 
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-    name: mssql-data
-    annotations:
-    volume.beta.kubernetes.io/storage-class: azure-disk
+  name: mssql-data
+  annotations:
+    volume.beta.kubernetes.io/storage-class: default
 spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
+  accessModes:
+  - ReadWriteOnce
+  resources:
     requests:
-        storage: 8Gi
+      storage: 8Gi
 ```
 
 2. Create the persistent volume claim in Kubernetes.
@@ -153,32 +153,32 @@ metadata:
 spec:
     replicas: 1
     template:
-    metadata:
+      metadata:
         labels:
-        app: mssql
-    spec:
+          app: mssql
+      spec:
         terminationGracePeriodSeconds: 10
         containers:
         - name: mssql
-        image: mcr.microsoft.com/mssql/server:2017-latest
-        ports:
-        - containerPort: 1433
-        env:
-        - name: MSSQL_PID
+          image: mcr.microsoft.com/mssql/server:2017-latest
+          ports:
+          - containerPort: 1433
+          env:
+          - name: MSSQL_PID
             value: "Developer"
-        - name: ACCEPT_EULA
+          - name: ACCEPT_EULA
             value: "Y"
-        - name: MSSQL_SA_PASSWORD
+          - name: MSSQL_SA_PASSWORD
             valueFrom:
-            secretKeyRef:
-                name: mssql
-                key: SA_PASSWORD 
-        volumeMounts:
-        - name: mssqldb
+              secretKeyRef:
+                  name: mssql
+                  key: SA_PASSWORD 
+          volumeMounts:
+          - name: mssqldb
             mountPath: /var/opt/mssql
         volumes:
         - name: mssqldb
-        persistentVolumeClaim:
+          persistentVolumeClaim:
             claimName: mssql-data
 ---
 apiVersion: v1
@@ -187,11 +187,11 @@ metadata:
     name: mssql-deployment
 spec:
     selector:
-    app: mssql
+      app: mssql
     ports:
     - protocol: TCP
-        port: 1433
-        targetPort: 1433
+      port: 1433
+      targetPort: 1433
     type: LoadBalancer
 ```
 
