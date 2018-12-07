@@ -246,7 +246,7 @@ mssql-deployment-7c5687bc5b-4szrs   1/1     Running   0          3m
 
 In the preceding output, the pod has a status of `Running`. This status indicates that the container is ready. This may take several minutes.
 
->[!NOTE]
+>**NOTE:**
 >After the deployment is created, it can take a few minutes before the pod is visible. The delay is because the cluster pulls the [mssql-server-linux](https://hub.docker.com/r/microsoft/mssql-server-linux/) image from the Docker hub. After the image is pulled the first time, subsequent deployments might be faster if the deployment is to a node that already has the image cached on it. 
 
 3. Verify the services are running. Run the following command:
@@ -283,7 +283,7 @@ You can use the following applications to connect to the SQL Server instance.
 
 * [sqlcmd](https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools?view=sql-server-2017)
 
-To connect with `sqlcmd`, run the following command:
+The Azure Cloud Shell includes sqlcmd so there is no need to install anything. To connect with `sqlcmd`, run the following command:
 
 ```cmd
 sqlcmd -S <External IP Address> -U sa -P "MyC0m9l&xP@ssw0rd"
