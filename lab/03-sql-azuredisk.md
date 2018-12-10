@@ -25,7 +25,10 @@ Configure a [persistent volume](https://kubernetes.io/docs/concepts/storage/pers
 
 1. Create a manifest to define the persistent volume claim.  The manifest specifies the storage provisioner, parameters, and [reclaim policy](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming). The Kubernetes cluster uses this manifest to create the persistent storage. 
 
-The following yaml example defines a persistent volume claim. The storage class provisioner is `default`, because this Kubernetes cluster is in Azure it will use the built-in storage class that maps to Azure Standard Managed Disk. The storage account type is `Standard_LRS`. The persistent volume claim is named `mssql-data`. The persistent volume claim metadata includes an annotation connecting it back to the storage class. 
+The following yaml example defines a persistent volume claim. The storage class provisioner is `default`, because this Kubernetes cluster is in Azure it will use the built-in storage class that maps to Azure Standard Managed Disk. The storage account type is `Standard_LRS`. The persistent volume claim is named `mssql-data`. The persistent volume claim metadata includes an annotation connecting it back to the storage class.
+
+>**NOTE:**
+>For purposes of this lab we are using Azure Standard disk, however for production purposes it is advised that the managed-premium storage class is used for high transactional data needs. See [About disks storage for Azure Linux VMs](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/about-disks-and-vhds) for reference.
 
 ```yaml
 kind: PersistentVolumeClaim
@@ -299,7 +302,7 @@ This tutorial uses the Wide World Importers sample database. Use the following s
 1. First, use `kubectl exec` to create a backup folder. The following command creates a /var/opt/mssql/backup directory inside the SQL Server pod.
 
 ```console
-kubectl exec -it mssql-deployment-7c5687bc5b-4szrs mkdir /var/opt/mssql/backup
+kubectl exec -it <MSSQL POD ID> mkdir /var/opt/mssql/backup
 ```
 
 2. Next, download the WideWorldImporters-Full.bak file to your host machine.
@@ -320,7 +323,7 @@ kubectl cp wwi.bak <MSSQL_POD_NAME>:/var/opt/mssql/backup/wwi.bak
 4. Run sqlcmd inside the pod to list out logical file names and paths inside the backup. This is done with the RESTORE FILELISTONLY Transact-SQL statement.
 
 ```console
-sqlcmd -S <External IP Address> -U sa -P "MyC0m9l&xP@ssw0rd" -Q 'RESTORE FILELISTONLY FROM DISK = "/var/opt/mssql/backup/wwi.bak"' \   | tr -s ' ' | cut -d ' ' -f 1-2
+sqlcmd -S <External IP Address> -U sa -P "MyC0m9l&xP@ssw0rd" -Q 'RESTORE FILELISTONLY FROM DISK = "/var/opt/mssql/backup/wwi.bak"' | tr -s ' ' | cut -d ' ' -f 1-2
 ```
 
 **Output:**
@@ -336,8 +339,7 @@ WWI_InMemory_Data_1   D:\Data\WideWorldImporters_InMemory_Data_1
 5. Call the RESTORE DATABASE command to restore the database inside the container. Specify new paths for each of the files in the previous step.
 
 ```console
-sqlcmd -S <External IP Address> -U sa -P "MyC0m9l&xP@ssw0rd" -Q 'RESTORE DATABASE WideWorldImporters FROM DISK = "/var/opt/mssql/backup
-/wwi.bak" WITH MOVE "WWI_Primary" TO "/var/opt/mssql/data/WideWorldImporters.mdf", MOVE "WWI_UserData" TO "/var/opt/mssql/data/WideWorldImporters_userdata.ndf", MOVE "WWI_Log" TO "/var/opt/mssql/data/WideWorldImporters.ldf", MOVE "WWI_InMemory_Data_1" TO "/var/opt/mssql/data/WideWorldImporters_InMemory_Data_1"'
+sqlcmd -S <External IP Address> -U sa -P "MyC0m9l&xP@ssw0rd" -Q 'RESTORE DATABASE WideWorldImporters FROM DISK = "/var/opt/mssql/backup/wwi.bak" WITH MOVE "WWI_Primary" TO "/var/opt/mssql/data/WideWorldImporters.mdf", MOVE "WWI_UserData" TO "/var/opt/mssql/data/WideWorldImporters_userdata.ndf", MOVE "WWI_Log" TO "/var/opt/mssql/data/WideWorldImporters.ldf", MOVE "WWI_InMemory_Data_1" TO "/var/opt/mssql/data/WideWorldImporters_InMemory_Data_1"'
 ```
 
 **Output:**

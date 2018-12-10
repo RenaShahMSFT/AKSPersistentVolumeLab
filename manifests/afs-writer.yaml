@@ -4,16 +4,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: afs-busybox
+  name: afs-writer
 spec:
   replicas: 2
   selector:
     matchLabels:
-      name: afs-busybox
+      name: afs-writer
   template:
     metadata:
       labels:
-        name: afs-busybox
+        name: afs-writer
     spec:
       containers:
       - image: alpine
